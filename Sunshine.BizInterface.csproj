@@ -34,9 +34,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Nx.Message">
-      <HintPath>..\DllReference\Nx.Message.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -46,9 +43,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccountValidationService.cs" />
-    <Compile Include="ValidatableSignup.cs" />
+    <Compile Include="AccountValidation\IAccountValidationService.cs" />
+    <Compile Include="AccountValidation\EmailAccountValidationServiceBase.cs" />
+    <Compile Include="AccountValidation\IUserService.cs" />
+    <Compile Include="AccountValidation\IValidationTokenManager.cs" />
+    <Compile Include="AccountValidation\SmsAccountValidationServiceBase.cs" />
+    <Compile Include="AccountValidation\ValidatableSignup.cs" />
+    <Compile Include="MessageInterface\IEmailSendChannel.cs" />
+    <Compile Include="MessageInterface\IMessageChannel.cs" />
+    <Compile Include="MessageInterface\ISmsSendChannel.cs" />
+    <Compile Include="MessageInterface\MessageSendChannelException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="AccountValidation\ValidatableSignup2.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
