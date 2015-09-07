@@ -48,13 +48,15 @@
     <Compile Include="AccountValidation\IUserService.cs" />
     <Compile Include="AccountValidation\IValidationTokenManager.cs" />
     <Compile Include="AccountValidation\SmsAccountValidationServiceBase.cs" />
-    <Compile Include="AccountValidation\ValidatableSignup.cs" />
+    <Compile Include="AccountValidation\SmsVerifyCodeManagerBase.cs" />
+    <Compile Include="AccountValidation\ValidatableOperation.cs" />
     <Compile Include="MessageInterface\IEmailSendChannel.cs" />
     <Compile Include="MessageInterface\IMessageChannel.cs" />
     <Compile Include="MessageInterface\ISmsSendChannel.cs" />
     <Compile Include="MessageInterface\MessageSendChannelException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AccountValidation\ValidatableSignup2.cs" />
+    <Compile Include="AccountValidation\ValidatableOperation2.cs" />
+    <Compile Include="SunshineRandom.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -8,20 +8,21 @@ namespace Sunshine.BizInterface
 
 
     /// <summary>
-    /// 支持校验的注册之步骤2：校验验证码
+    /// 支持校验的操作之步骤2：校验验证码
     /// </summary>
     /// <typeparam name="TUser"></typeparam>
-    public class ValidatableSignup2
+    public sealed class ValidatableOperation2
     {
         /// <summary>
-        /// 要注册的账号
+        /// 关联账号
         /// </summary>
         public string AccountId { get; private set; }
         IValidationTokenManager validationTokenMgr;
-        public ValidatableSignup2(IValidationTokenManager vcodeMgr, string accountId, string bizType = "signup")
+        public ValidatableOperation2(IValidationTokenManager vcodeMgr, string accountId, string bizType)
         {
             this.validationTokenMgr = vcodeMgr;
             this.AccountId = accountId;
+            this.BizType = bizType;
         }
 
         /// <summary>
@@ -33,10 +34,11 @@ namespace Sunshine.BizInterface
         /// 验证码是否正确
         /// </summary>
         /// <param name="vcode"></param>
+        /// <param name="removeIfSuccess"></param>
         /// <returns></returns>
-        public bool CheckVCode(string vcode)
+        public bool CheckVCode(string vcode, bool removeIfSuccess = true)
         {
-            return this.validationTokenMgr.CheckToken(AccountId, this.BizType, vcode, true);
+            return this.validationTokenMgr.CheckToken(AccountId, this.BizType, vcode, removeIfSuccess);
         }
     }
 }

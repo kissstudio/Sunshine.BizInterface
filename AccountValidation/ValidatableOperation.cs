@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace Sunshine.BizInterface
 {
     /// <summary>
-    /// 支持校验的注册之步骤1，发送验证码
+    /// 支持校验的操作之步骤1，发送验证码
     /// </summary>
-    public class ValidatableSignup
+    public class ValidatableOperation
     {
         /// <summary>
         /// 业务操作类型
@@ -19,12 +19,12 @@ namespace Sunshine.BizInterface
         public IAccountValidationService ValidationService { get; private set; }
 
         /// <summary>
-        /// 支持校验的注册
+        /// 支持校验操作
         /// </summary>
         /// <param name="validationSvc">账号校验服务</param>
         /// <param name="vcodeMgr">验证码管理器</param>
         /// <param name="bizType">业务类型</param>
-        public ValidatableSignup(IAccountValidationService validationSvc, IValidationTokenManager vcodeMgr, string bizType = "signup")
+        public ValidatableOperation(IAccountValidationService validationSvc, IValidationTokenManager vcodeMgr, string bizType)
         {
             this.ValidationService = validationSvc;
             validationTokenMgr = vcodeMgr;
@@ -34,10 +34,10 @@ namespace Sunshine.BizInterface
         /// <summary>
         /// 发送校验码
         /// </summary>
-        public void SendVCode()
+        public void SendVCode(string accountId)
         {
-            var vcode = this.validationTokenMgr.NewToken(ValidationService.AccountId, this.BizType);
-            this.ValidationService.SendValidationMessage(vcode);
+            var vcode = this.validationTokenMgr.NewToken(accountId, this.BizType);
+            this.ValidationService.SendValidationMessage(accountId, vcode);
         }
     }
 }

@@ -11,21 +11,18 @@ namespace Sunshine.BizInterface
     /// </summary>
     public abstract class SmsAccountValidationServiceBase : IAccountValidationService
     {
-        public SmsAccountValidationServiceBase(string accountId, ISmsSendChannel smsSendChannel)
+        public SmsAccountValidationServiceBase(ISmsSendChannel smsSendChannel)
         {
             this.SmsSendChannel = smsSendChannel;
-            this.AccountId = accountId;
         }
         public ISmsSendChannel SmsSendChannel { get; private set; }
 
-        public string AccountId { get; private set; }
-
         protected abstract string GetSmsContent(string vcode);
 
-        public void SendValidationMessage(string vcode)
+        public void SendValidationMessage(string accountId, string vcode)
         {
             var content = this.GetSmsContent(vcode);
-            SmsSendChannel.SendSms(AccountId, content);
+            SmsSendChannel.SendSms(accountId, content);
         }
     }
 }

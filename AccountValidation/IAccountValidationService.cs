@@ -12,7 +12,6 @@ namespace Sunshine.BizInterface
     /// </summary>
     public interface IAccountValidationService
     {
-        string AccountId { get; }
-        void SendValidationMessage(string vcode);
+        void SendValidationMessage(string accountId, string vcode);
     }
 }

@@ -16,21 +16,20 @@ namespace Sunshine.BizInterface
         public IEmailSendChannel EmailSendChannel { get; private set; }
         public string AccountId { get; private set; }
 
-        public EmailAccountValidationServiceBase(IEmailSendChannel emailSendChannel, string emailAccount)
+        public EmailAccountValidationServiceBase(IEmailSendChannel emailSendChannel)
         {
             this.EmailSendChannel = emailSendChannel;
-            this.AccountId = emailAccount;
         }
 
         protected abstract string GetEmailSubject();
 
         protected abstract string GetEmailContent(string vcode);
 
-        public void SendValidationMessage(string vcode)
+        public void SendValidationMessage(string accountId, string vcode)
         {
             var subject = this.GetEmailSubject();
             var content = this.GetEmailContent(vcode);
-            EmailSendChannel.SendEmail(AccountId, subject, content);
+            EmailSendChannel.SendEmail(accountId, subject, content);
         }
     }
 }
