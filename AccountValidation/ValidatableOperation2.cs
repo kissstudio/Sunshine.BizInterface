@@ -5,8 +5,6 @@ using System.Text;
 
 namespace Sunshine.BizInterface
 {
-
-
     /// <summary>
     /// 支持校验的操作之步骤2：校验验证码
     /// </summary>

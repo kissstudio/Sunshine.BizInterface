@@ -42,14 +42,17 @@ namespace Sunshine.BizInterface.AccountValidation
         Dictionary<string, BizVerifyModel> vcodeDictionary = new Dictionary<string, BizVerifyModel>();
         string IValidationTokenManager.NewToken(string accountId, string bizType)
         {
-            return this.NewVCode(accountId, bizType, TimeSpan.FromMinutes(TimeoutInMinutes));
+            return this.NewVCode(accountId, bizType, TimeSpan.FromMinutes(Timeout));
         }
 
         bool IValidationTokenManager.CheckToken(string accountId, string bizType, string token, bool once)
         {
             return this.CheckVCode(accountId, bizType, token, once);
         }
-        protected abstract int TimeoutInMinutes { get; }
+        /// <summary>
+        /// In Minutes
+        /// </summary>
+        protected abstract int Timeout { get; }
         protected abstract string NextVerifyCode(SunshineRandom rnd);
 
         public string NewVCode(string id, string bizId, TimeSpan timeout)
@@ -57,20 +60,22 @@ namespace Sunshine.BizInterface.AccountValidation
             lock (syncObj)
             {
                 var vcode = this.NextVerifyCode(this.Rnd);
-                var vm = BizVerifyModel.Create(id, bizId, vcode, timeout);
-                if (vcodeDictionary.ContainsKey(vm.Md5))
+                var md5Key = GetMd5Key(id, bizId);
+                if (vcodeDictionary.ContainsKey(md5Key))
                 {
-                    vcodeDictionary[vm.Md5].Refresh(timeout);
+                    //对象复用
+                    vcodeDictionary[md5Key].Reuse(vcode, timeout);
                 }
                 else
                 {
-                    vcodeDictionary.Add(vm.Md5, vm);
+                    var vm = BizVerifyModel.Create(md5Key, vcode, timeout);
+                    vcodeDictionary.Add(vm.Md5Key, vm);
                 }
-                return vcodeDictionary[vm.Md5].VerifyCode;
+                return vcode;
             }
         }
 
-        private static string GetMd5(string id, string bizId)
+        private static string GetMd5Key(string id, string bizId)
         {
             using (MD5 md5 = new MD5CryptoServiceProvider())
             {
@@ -90,7 +95,7 @@ namespace Sunshine.BizInterface.AccountValidation
         /// <returns></returns>
         public bool CheckVCode(string userId, string bizId, string vcode, bool removeIfSuccess = true)
         {
-            var hashKey = GetMd5(userId, bizId);
+            var hashKey = GetMd5Key(userId, bizId);
             lock (syncObj)
             {
                 if (vcodeDictionary.ContainsKey(hashKey))
@@ -131,33 +136,21 @@ namespace Sunshine.BizInterface.AccountValidation
         {
             private static SunshineRandom Rnd = new SunshineRandom();
             private BizVerifyModel() { }
-            public static BizVerifyModel Create(string id, string bizId, string vcode, TimeSpan timeout)
+            public static BizVerifyModel Create(string md5Key, string vcode, TimeSpan timeout)
             {
                 var model = new BizVerifyModel();
                 model.CreateDate = DateTime.Now;
                 model.Timeout = timeout;
-                model.Id = id;
-                model.BizId = bizId;
                 model.VerifyCode = vcode;
-                model.Md5 = SmsVerifyCodeManagerBase.GetMd5(id, bizId);
+                model.Md5Key = md5Key;
                 return model;
             }
-            public static BizVerifyModel Create(string id, string bizId, TimeSpan timeout)
+            public static BizVerifyModel Create(string md5Key, TimeSpan timeout)
             {
                 var vcode = Rnd.Next(100000, 999999).ToString();
-                return BizVerifyModel.Create(id, bizId, vcode, timeout);
+                return BizVerifyModel.Create(md5Key, vcode, timeout);
             }
 
-
-            /// <summary>
-            /// 业务标识号（用户注册/找回密码/其他，请自行定义）
-            /// </summary>
-            public string BizId { get; private set; }
-
-            /// <summary>
-            /// 创建验证码对象
-            /// </summary>
-            public string Id { get; private set; }
             /// <summary>
             /// 验证码
             /// </summary>
@@ -204,15 +197,12 @@ namespace Sunshine.BizInterface.AccountValidation
                 this.Removed = true;
             }
 
-            public string Md5 { get; private set; }
+            public string Md5Key { get; private set; }
 
-            internal void Refresh(TimeSpan timeout)
+
+            internal void Reuse(string vcode, TimeSpan timeout)
             {
-                //对标记为删除的刷新验证码
-                if (this.Removed)
-                {
-                    this.VerifyCode = Rnd.Next(100000, 999999).ToString();
-                }
+                this.VerifyCode = vcode;
                 this.CreateDate = DateTime.Now;
                 this.Timeout = timeout;
             }
